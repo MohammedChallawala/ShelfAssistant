@@ -1,9 +1,0 @@
-@echo off
-echo Starting Edge Shelf Assistant...
-echo.
-echo Installing dependencies...
-pip install -r requirements.txt
-echo.
-echo Starting server...
-python run.py
-pause
