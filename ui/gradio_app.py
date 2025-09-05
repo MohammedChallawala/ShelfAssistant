@@ -30,6 +30,20 @@ def do_ask(q):
     r.raise_for_status()
     return r.json().get("answer", "")
 
+def do_voice_query(audio):
+    """Process voice query: transcribe and get LLM response."""
+    if audio is None:
+        return "Record or upload audio.", "No audio provided."
+    
+    try:
+        files = {"audio": (audio.name, open(audio.name, "rb"), "audio/wav")}
+        r = requests.post(f"{API_BASE}/llm/voice", files=files, timeout=120)
+        r.raise_for_status()
+        data = r.json()
+        return data["data"]["transcript"], data["data"]["response"]
+    except Exception as e:
+        return f"Error: {str(e)}", f"Error: {str(e)}"
+
 with gr.Blocks() as demo:
     gr.Markdown("# Edge Shelf Assistant (Sim)")
     with gr.Tab("Vision"):
@@ -47,6 +61,35 @@ with gr.Blocks() as demo:
         a = gr.Textbox(label="Answer")
         ask_btn = gr.Button("Ask")
         ask_btn.click(do_ask, inputs=q, outputs=a)
+    
+    with gr.Tab("Voice"):
+        gr.Markdown("### 🎤 Voice Query")
+        gr.Markdown("Record your question or upload an audio file. The system will transcribe it and provide an AI response.")
+        
+        voice_audio = gr.Audio(
+            sources=["microphone", "upload"], 
+            type="filepath",
+            label="Record or upload audio"
+        )
+        
+        with gr.Row():
+            transcript_box = gr.Textbox(
+                label="Transcription", 
+                placeholder="Your spoken question will appear here...",
+                lines=2
+            )
+            response_box = gr.Textbox(
+                label="AI Response", 
+                placeholder="AI response will appear here...",
+                lines=4
+            )
+        
+        voice_btn = gr.Button("🎤 Process Voice Query", variant="primary")
+        voice_btn.click(
+            do_voice_query, 
+            inputs=voice_audio, 
+            outputs=[transcript_box, response_box]
+        )
 
 if __name__ == "__main__":
     demo.launch(server_port=7860)

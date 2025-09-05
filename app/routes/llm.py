@@ -3,6 +3,7 @@ from ..models.response import DataResponse
 from typing import Dict, Any, Optional
 from ..services.llm import llm_service
 from ..services.image_handler import image_handler
+from ..services.stt import stt_service
 
 router = APIRouter(prefix="/llm", tags=["llm"])
 
@@ -68,3 +69,37 @@ async def unified_query(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/voice", response_model=DataResponse[Dict[str, str]])
+async def voice_query(
+    audio: UploadFile = File(..., description="Audio file for voice query")
+):
+    """Process voice query: transcribe audio and generate LLM response."""
+    try:
+        # Save uploaded audio to temp file
+        bytes_data = await audio.read()
+        audio_path = image_handler.save_uploaded_image(bytes_data, filename_prefix="voice")
+        
+        # Get transcript
+        transcript = stt_service.transcribe_audio(str(audio_path))
+        
+        # Get LLM response
+        response = llm_service.generate_text(transcript)
+        
+        return DataResponse(
+            success=True, 
+            message="Voice query processed", 
+            data={
+                "transcript": transcript,
+                "response": response
+            }
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/stt/status", response_model=DataResponse[Dict[str, Any]])
+async def get_stt_status():
+    """Get STT service status."""
+    status = stt_service.get_model_info()
+    return DataResponse(success=True, message="STT status", data=status)

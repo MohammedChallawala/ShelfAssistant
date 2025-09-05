@@ -84,6 +84,17 @@ pytest tests/ -v
 python run_tests.py
 ```
 
+### 5. Voice Features (Optional)
+For voice input support, install faster-whisper:
+```bash
+# Windows: Install Microsoft Visual C++ Build Tools first
+# Then: pip install faster-whisper==1.0.3
+
+# Linux/macOS: pip install faster-whisper==1.0.3
+```
+
+**Note**: Voice features work in fallback mode without faster-whisper. See `INSTALL_STT.md` for details.
+
 ## Quick Start (Laptop)
 1) Install Ollama and pull a tiny model:
 ```bash

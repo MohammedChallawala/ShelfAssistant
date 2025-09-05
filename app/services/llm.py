@@ -149,6 +149,25 @@ class LLMService:
         """Generate text using phi3:mini model."""
         return self.generate_answer(question=prompt, context="", system_prompt=None)
 
+    def voice_query(self, audio_path: str) -> str:
+        """Complete voice query pipeline: STT -> LLM response.
+        
+        Args:
+            audio_path: Path to the audio file
+            
+        Returns:
+            LLM response to the transcribed question
+        """
+        from .stt import stt_service
+        
+        # Step 1: Transcribe audio to text
+        transcript = stt_service.transcribe_audio(audio_path)
+        
+        # Step 2: Generate response using the transcript
+        response = self.generate_text(transcript)
+        
+        return response
+
     def caption_image(self, image_path: str, prompt: Optional[str] = None) -> str:
         """Caption an image using moondream model for vision understanding."""
         user_prompt = prompt or "Describe the image succinctly."

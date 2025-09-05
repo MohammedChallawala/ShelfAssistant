@@ -11,8 +11,8 @@ gradio==4.44.0
 ultralytics==8.3.14
 # torch will be installed by ultralytics; for CPU only on laptop it's fine.
 
-# Speech (lightweight) - DISABLED due to av dependency issues
-# faster-whisper==1.0.3
+# Speech (lightweight)
+faster-whisper==1.0.3
 
 # TTS (pure python fallback; on Linux may need espeak)
 pyttsx3==2.90
