@@ -13,6 +13,7 @@ ultralytics==8.3.14
 
 # Speech (lightweight)
 faster-whisper==1.0.3
+av>=15.0.0  # Note: Version 15.1.0 works despite version warning
 
 # TTS (pure python fallback; on Linux may need espeak)
 pyttsx3==2.90

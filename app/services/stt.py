@@ -6,7 +6,8 @@ from pathlib import Path
 try:
     from faster_whisper import WhisperModel
     FASTER_WHISPER_AVAILABLE = True
-except ImportError:
+except ImportError as e:
+    print(f"faster-whisper import failed: {e}")
     FASTER_WHISPER_AVAILABLE = False
 
 # Fallback: Try to use OpenAI Whisper API or other alternatives
@@ -37,6 +38,7 @@ class STTService:
         if not self.is_initialized:
             try:
                 print(f"Loading Whisper model: {self.model_size} on {self.device}")
+                # Try to initialize without av dependency
                 self.model = WhisperModel(
                     self.model_size, 
                     device=self.device,
